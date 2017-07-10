@@ -25,28 +25,28 @@ avn_pulsar_proto.fields = {f_magic_no, f_version, f_item_pointer_width, f_heap_a
 function avn_pulsar_proto.dissector(buffer,pinfo,tree)
   pinfo.cols.protocol = "AVN_PULSAR"
   local subtree = tree:add(avn_pulsar_proto,buffer(),"AVN Pulsar Protocol Data")
-  subtree:add(f_magic_no, buffer(0,1))
-  subtree:add(f_version, buffer(1,1))
+  --subtree:add(f_magic_no, buffer(0,1))
+  --subtree:add(f_version, buffer(1,1))
   subtree:add(f_item_pointer_width, buffer(2,1))
   subtree:add(f_heap_addr_width, buffer(3,1))
-  subtree:add(f_reserved, buffer(4,2))
+  --subtree:add(f_reserved, buffer(4,2))
   num_items = buffer(6,2):uint()
-  subtree:add(f_items, num_items)
+  subtree:add(f_items, buffer(6,2))
 
   for spead_item=0,num_items-1,1
   do
-    subtree:add(f_spead_direct, buffer(8 + spead_item*8, 1))
+    --subtree:add(f_spead_direct, buffer(8 + spead_item*8, 1))
     subtree:add(f_spead_id, buffer(9 + spead_item*8, 2))
     subtree:add(f_spead_data, buffer(12 + spead_item*8, 4))
   end
 
-  header_size = (num_items+1) * 8
 
-  data_size = (buffer:len()-header_size) / 8
+
+  data_size = (buffer:len()-64) / 8
 
   for data_sample = 0, data_size-1, 1
   do
-    subtree:add(f_data, buffer(header_size + data_sample*8,8))
+    subtree:add(f_data, buffer(64 + data_sample*8,8))
   end
 end
 
